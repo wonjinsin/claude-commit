@@ -15,6 +15,7 @@ import {
 } from '../utils/git.js';
 import { getConfig } from '../utils/config.js';
 import { generateCommitMessage } from '../utils/openai.js';
+import { generateCommitMessageWithClaude } from '../utils/claude.js';
 import { KnownError, handleCliError } from '../utils/error.js';
 
 export default async (
@@ -53,7 +54,11 @@ export default async (
 
 		const { env } = process;
 		const config = await getConfig({
-			OPENAI_KEY: env.OPENAI_KEY || env.OPENAI_API_KEY,
+			MODEL: env.MODEL,
+			OPENAI_API_KEY: env.OPENAI_API_KEY,
+			OPENAI_MODEL: env.OPENAI_MODEL,
+			CLAUDE_API_KEY: env.CLAUDE_API_KEY,
+			CLAUDE_API_MODEL: env.CLAUDE_API_MODEL,
 			proxy:
 				env.https_proxy || env.HTTPS_PROXY || env.http_proxy || env.HTTP_PROXY,
 			generate: generate?.toString(),
@@ -64,17 +69,44 @@ export default async (
 		s.start('The AI is analyzing your changes');
 		let messages: string[];
 		try {
-			messages = await generateCommitMessage(
-				config.OPENAI_KEY,
-				config.model,
-				config.locale,
-				staged.diff,
-				config.generate,
-				config['max-length'],
-				config.type,
-				config.timeout,
-				config.proxy
-			);
+			// Choose AI based on MODEL setting
+			if (config.MODEL === 'claude') {
+				if (!config.CLAUDE_API_KEY) {
+					throw new KnownError(
+						'Claude API key is required when MODEL=claude. Please set CLAUDE_API_KEY.'
+					);
+				}
+				messages = await generateCommitMessageWithClaude(
+					config.CLAUDE_API_KEY!,
+					config.CLAUDE_API_MODEL,
+					config.locale,
+					staged.diff,
+					config.generate,
+					config['max-length'],
+					config.type,
+					config.timeout,
+					config.proxy
+				);
+			} else if (config.MODEL === 'openai') {
+				if (!config.OPENAI_API_KEY) {
+					throw new KnownError(
+						'OpenAI API key is required when MODEL=openai. Please set OPENAI_API_KEY.'
+					);
+				}
+				messages = await generateCommitMessage(
+					config.OPENAI_API_KEY!,
+					config.OPENAI_MODEL,
+					config.locale,
+					staged.diff,
+					config.generate,
+					config['max-length'],
+					config.type,
+					config.timeout,
+					config.proxy
+				);
+			} else {
+				throw new KnownError(`Invalid MODEL setting: ${config.MODEL}`);
+			}
 		} finally {
 			s.stop('Changes analyzed');
 		}

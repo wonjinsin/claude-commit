@@ -8,7 +8,7 @@ import {
 	type TiktokenModel,
 	// encoding_for_model,
 } from '@dqbd/tiktoken';
-import createHttpsProxyAgent from 'https-proxy-agent';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import { KnownError } from './error.js';
 import type { CommitType } from './config.js';
 import { generatePrompt } from './prompt.js';
@@ -39,7 +39,7 @@ const httpsPost = async (
 					'Content-Length': Buffer.byteLength(postContent),
 				},
 				timeout,
-				agent: proxy ? createHttpsProxyAgent(proxy) : undefined,
+				agent: proxy ? (new HttpsProxyAgent(proxy) as any) : undefined,
 			},
 			(response) => {
 				const body: Buffer[] = [];
@@ -156,8 +156,8 @@ export const generateCommitMessage = async (
 						content: diff,
 					},
 				],
-				temperature: 0.7,
-				top_p: 1,
+				temperature: 0.3,
+				top_p: 0.9,
 				frequency_penalty: 0,
 				presence_penalty: 0,
 				max_tokens: 200,

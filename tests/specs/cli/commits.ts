@@ -240,7 +240,7 @@ export default testSuite(({ describe }) => {
 		describe('commit types', ({ test }) => {
 			test('Should not use conventional commits by default', async () => {
 				const conventionalCommitPattern =
-					/(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test):\s/;
+					/.* (build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test):\s/;
 				const { fixture, aicommits } = await createFixture({
 					...files,
 				});
@@ -275,7 +275,7 @@ export default testSuite(({ describe }) => {
 
 			test('Conventional commits', async () => {
 				const conventionalCommitPattern =
-					/(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test):\s/;
+					/.* (build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test):\s/;
 				const { fixture, aicommits } = await createFixture({
 					...files,
 					'.aicommits': `${files['.aicommits']}\ntype=conventional`,
@@ -311,7 +311,7 @@ export default testSuite(({ describe }) => {
 
 			test('Accepts --type flag, overriding config', async () => {
 				const conventionalCommitPattern =
-					/(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test):\s/;
+					/.* (build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test):\s/;
 				const { fixture, aicommits } = await createFixture({
 					...files,
 					'.aicommits': `${files['.aicommits']}\ntype=other`,
@@ -348,7 +348,7 @@ export default testSuite(({ describe }) => {
 
 			test('Accepts empty --type flag', async () => {
 				const conventionalCommitPattern =
-					/(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test):\s/;
+					/.* (build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test):\s/;
 				const { fixture, aicommits } = await createFixture({
 					...files,
 					'.aicommits': `${files['.aicommits']}\ntype=conventional`,

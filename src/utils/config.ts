@@ -21,16 +21,60 @@ const parseAssert = (name: string, condition: any, message: string) => {
 };
 
 const configParsers = {
-	OPENAI_KEY(key?: string) {
-		if (!key) {
+	MODEL(model?: string) {
+		if (!model) {
 			throw new KnownError(
-				'Please set your OpenAI API key via `aicommits config set OPENAI_KEY=<your token>`'
+				'Please set your preferred model via `aicommits config set MODEL=openai` or `aicommits config set MODEL=claude`'
 			);
 		}
-		parseAssert('OPENAI_KEY', key.startsWith('sk-'), 'Must start with "sk-"');
+
+		const validModels = ['openai', 'claude'];
+		parseAssert(
+			'MODEL',
+			validModels.includes(model),
+			`Must be one of: ${validModels.join(', ')}`
+		);
+
+		return model;
+	},
+	OPENAI_API_KEY(key?: string) {
+		if (!key) {
+			return undefined;
+		}
+		parseAssert(
+			'OPENAI_API_KEY',
+			key.startsWith('sk-'),
+			'Must start with "sk-"'
+		);
 		// Key can range from 43~51 characters. There's no spec to assert this.
 
 		return key;
+	},
+	OPENAI_MODEL(model?: string) {
+		if (!model || model.length === 0) {
+			return 'gpt-3.5-turbo';
+		}
+
+		return model as TiktokenModel;
+	},
+	CLAUDE_API_KEY(key?: string) {
+		if (!key) {
+			return undefined;
+		}
+		parseAssert(
+			'CLAUDE_API_KEY',
+			key.startsWith('sk-ant-'),
+			'Must start with "sk-ant-"'
+		);
+
+		return key;
+	},
+	CLAUDE_API_MODEL(model?: string) {
+		if (!model || model.length === 0) {
+			return 'claude-sonnet-4-0';
+		}
+
+		return model;
 	},
 	locale(locale?: string) {
 		if (!locale) {
@@ -80,13 +124,6 @@ const configParsers = {
 
 		return url;
 	},
-	model(model?: string) {
-		if (!model || model.length === 0) {
-			return 'gpt-3.5-turbo';
-		}
-
-		return model as TiktokenModel;
-	},
 	timeout(timeout?: string) {
 		if (!timeout) {
 			return 10_000;
@@ -101,7 +138,7 @@ const configParsers = {
 	},
 	'max-length'(maxLength?: string) {
 		if (!maxLength) {
-			return 50;
+			return 150;
 		}
 
 		parseAssert('max-length', /^\d+$/.test(maxLength), 'Must be an integer');

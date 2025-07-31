@@ -9,6 +9,15 @@
 
 ---
 
+## Attribution
+
+## Notice
+
+This repository is a modified version of [Nutlope/aicommits](https://github.com/Nutlope/aicommits).  
+Original source is licensed under the MIT License.  
+All credits go to the original authors.  
+Changes have been made to suit internal requirements. Please refer to the LICENSE file for original license terms.
+
 ## Setup
 
 > The minimum supported version of Node.js is the latest v14. Check your Node.js version with `node --version`.
@@ -19,17 +28,31 @@
    npm install -g aicommits
    ```
 
-2. Retrieve your API key from [OpenAI](https://platform.openai.com/account/api-keys)
+2. Retrieve your API key from [OpenAI](https://platform.openai.com/account/api-keys) or [Anthropic](https://console.anthropic.com/)
 
    > Note: If you haven't already, you'll have to create an account and set up billing.
 
 3. Set the key so aicommits can use it:
 
+   **For OpenAI:**
+
    ```sh
-   aicommits config set OPENAI_KEY=<your token>
+   aicommits config set MODEL=openai
+   aicommits config set OPENAI_API_KEY=<your token>
+   ```
+
+   **For Claude:**
+
+   ```sh
+   aicommits config set MODEL=claude
+   aicommits config set CLAUDE_API_KEY=<your token>
+   # Optional: Set specific model (default: claude-sonnet-4-0)
+   aicommits config set CLAUDE_API_MODEL=claude-3-5-sonnet-20241022
    ```
 
    This will create a `.aicommits` file in your home directory.
+
+   > **Note:** You must explicitly set MODEL to either `openai` or `claude` to specify which AI provider to use.
 
 ### Upgrading
 
@@ -78,13 +101,21 @@ aicommits --generate <i> # or -g <i>
 
 #### Generating Conventional Commits
 
-If you'd like to generate [Conventional Commits](https://conventionalcommits.org/), you can use the `--type` flag followed by `conventional`. This will prompt `aicommits` to format the commit message according to the Conventional Commits specification:
+If you'd like to generate [Conventional Commits](https://conventionalcommits.org/), you can use the `--type` flag followed by `conventional`. This will prompt `aicommits` to format the commit message according to the Conventional Commits specification with emojis:
 
 ```sh
 aicommits --type conventional # or -t conventional
 ```
 
 This feature can be useful if your project follows the Conventional Commits standard or if you're using tools that rely on this commit format.
+
+**Example outputs:**
+
+- `✨ feat: add user authentication system`
+- `🐛 fix(auth): resolve login validation issue`
+- `📚 docs: update API documentation`
+- `♻️ refactor: improve code structure`
+- `🧪 test: add unit tests for auth module`
 
 ### Git hook
 
@@ -134,13 +165,13 @@ aicommits config get <key>
 For example, to retrieve the API key, you can use:
 
 ```sh
-aicommits config get OPENAI_KEY
+aicommits config get OPENAI_API_KEY
 ```
 
 You can also retrieve multiple configuration options at once by separating them with spaces:
 
 ```sh
-aicommits config get OPENAI_KEY generate
+aicommits config get OPENAI_API_KEY generate
 ```
 
 ### Setting a configuration value
@@ -154,22 +185,71 @@ aicommits config set <key>=<value>
 For example, to set the API key, you can use:
 
 ```sh
-aicommits config set OPENAI_KEY=<your-api-key>
+aicommits config set OPENAI_API_KEY=<your-api-key>
 ```
 
 You can also set multiple configuration options at once by separating them with spaces, like
 
 ```sh
-aicommits config set OPENAI_KEY=<your-api-key> generate=3 locale=en
+aicommits config set OPENAI_API_KEY=<your-api-key> generate=3 locale=en
 ```
 
 ### Options
 
-#### OPENAI_KEY
+#### MODEL
 
 Required
 
+The AI model provider to use. Must be either `openai` or `claude`.
+
+```sh
+aicommits config set MODEL=openai
+# or
+aicommits config set MODEL=claude
+```
+
+#### OPENAI_API_KEY
+
+Required (when MODEL=openai)
+
 The OpenAI API key. You can retrieve it from [OpenAI API Keys page](https://platform.openai.com/account/api-keys).
+
+#### OPENAI_MODEL
+
+Default: `gpt-3.5-turbo`
+
+The OpenAI model to use. Consult the list of models available in the [OpenAI Documentation](https://platform.openai.com/docs/models/model-endpoint-compatibility).
+
+> Tip: If you have access, try upgrading to [`gpt-4`](https://platform.openai.com/docs/models/gpt-4) for next-level code analysis. It can handle double the input size, but comes at a higher cost. Check out OpenAI's website to learn more.
+
+```sh
+aicommits config set OPENAI_MODEL=gpt-4
+```
+
+#### CLAUDE_API_KEY
+
+Required (when MODEL=claude)
+
+The Claude API key. You can retrieve it from [Anthropic Console](https://console.anthropic.com/).
+
+#### CLAUDE_API_MODEL
+
+Default: `claude-sonnet-4-0`
+
+The Claude model to use. You can use any Claude model available in the Anthropic API.
+
+```sh
+aicommits config set CLAUDE_API_MODEL=claude-3-5-sonnet-20241022
+```
+
+**Popular models:**
+
+- `claude-sonnet-4-0` - Latest Sonnet model (default)
+- `claude-3-5-sonnet-20241022` - Most capable model
+- `claude-3-5-haiku-20241022` - Fast and efficient
+- `claude-3-opus-20240229` - Most powerful (legacy)
+- `claude-3-sonnet-20240229` - Balanced (legacy)
+- `claude-3-haiku-20240307` - Fast (legacy)
 
 #### locale
 
@@ -195,14 +275,6 @@ To clear the proxy option, you can use the command (note the empty value after t
 aicommits config set proxy=
 ```
 
-#### model
-
-Default: `gpt-3.5-turbo`
-
-The Chat Completions (`/v1/chat/completions`) model to use. Consult the list of models available in the [OpenAI Documentation](https://platform.openai.com/docs/models/model-endpoint-compatibility).
-
-> Tip: If you have access, try upgrading to [`gpt-4`](https://platform.openai.com/docs/models/gpt-4) for next-level code analysis. It can handle double the input size, but comes at a higher cost. Check out OpenAI's website to learn more.
-
 #### timeout
 
 The timeout for network requests to the OpenAI API in milliseconds.
@@ -217,7 +289,7 @@ aicommits config set timeout=20000 # 20s
 
 The maximum character length of the generated commit message.
 
-Default: `50`
+Default: `150`
 
 ```sh
 aicommits config set max-length=100
@@ -241,7 +313,7 @@ aicommits config set type=
 
 ## How it works
 
-This CLI tool runs `git diff` to grab all your latest code changes, sends them to OpenAI's GPT-3, then returns the AI generated commit message.
+This CLI tool runs `git diff` to grab all your latest code changes, sends them to the selected AI model (OpenAI or Claude), then returns the AI generated commit message.
 
 Video coming soon where I rebuild it from scratch to show you how to easily build your own CLI tools powered by AI.
 
