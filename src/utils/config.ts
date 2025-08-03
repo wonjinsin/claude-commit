@@ -23,9 +23,7 @@ const parseAssert = (name: string, condition: any, message: string) => {
 const configParsers = {
 	MODEL(model?: string) {
 		if (!model) {
-			throw new KnownError(
-				'Please set your preferred model via `aicommits config set MODEL=openai` or `aicommits config set MODEL=claude`'
-			);
+			return 'claude'; // Default to claude
 		}
 
 		const validModels = ['openai', 'claude'];
@@ -104,7 +102,7 @@ const configParsers = {
 	},
 	type(type?: string) {
 		if (!type) {
-			return '';
+			return 'conventional'; // Default to conventional commits
 		}
 
 		parseAssert(

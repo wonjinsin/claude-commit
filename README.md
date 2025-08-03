@@ -1,14 +1,3 @@
-<div align="center">
-  <div>
-    <img src=".github/screenshot.png" alt="AI Commits"/>
-    <h1 align="center">AI Commits</h1>
-  </div>
-	<p>A CLI that writes your git commit messages for you with AI. Never write a commit message again.</p>
-	<a href="https://www.npmjs.com/package/aicommits"><img src="https://img.shields.io/npm/v/aicommits" alt="Current version"></a>
-</div>
-
----
-
 ## Attribution
 
 ## Notice
@@ -25,10 +14,13 @@ Changes have been made to suit internal requirements. Please refer to the LICENS
 1. Install _aicommits_:
 
    ```sh
-   npm install -g aicommits
+   git clone https://github.com/wonjinsin/claude-commit
+   sudo npm install
+   npm run build
+   sudo npm link
    ```
 
-2. Retrieve your API key from [OpenAI](https://platform.openai.com/account/api-keys) or [Anthropic](https://console.anthropic.com/)
+2. Retrieve your API key from [Anthropic](https://platform.openai.com/account/api-keys) or [Anthropic](https://console.anthropic.com/)
 
    > Note: If you haven't already, you'll have to create an account and set up billing.
 
