@@ -38,27 +38,11 @@ Changes have been made to suit internal requirements. Please refer to the LICENS
    ```sh
    aicommits config set MODEL=claude
    aicommits config set CLAUDE_API_KEY=<your token>
-   # Optional: Set specific model (default: claude-sonnet-4-0)
-   aicommits config set CLAUDE_API_MODEL=claude-3-5-sonnet-20241022
    ```
 
    This will create a `.aicommits` file in your home directory.
 
    > **Note:** You must explicitly set MODEL to either `openai` or `claude` to specify which AI provider to use.
-
-### Upgrading
-
-Check the installed version with:
-
-```
-aicommits --version
-```
-
-If it's not the [latest version](https://github.com/Nutlope/aicommits/releases/latest), run:
-
-```sh
-npm update -g aicommits
-```
 
 ## Usage
 
@@ -81,6 +65,8 @@ aicommits --all # or -a
 
 > 👉 **Tip:** Use the `aic` alias if `aicommits` is too long for you.
 
+> If you ever want to write your own message instead of generating one, you can simply pass one in: `git commit -m "My message"`
+
 #### Generate multiple recommendations
 
 Sometimes the recommended commit message isn't the best so you want it to generate a few to pick from. You can generate multiple commit messages at once by passing in the `--generate <i>` flag, where 'i' is the number of generated messages:
@@ -89,25 +75,15 @@ Sometimes the recommended commit message isn't the best so you want it to genera
 aicommits --generate <i> # or -g <i>
 ```
 
-> Warning: this uses more tokens, meaning it costs more.
-
-#### Generating Conventional Commits
-
-If you'd like to generate [Conventional Commits](https://conventionalcommits.org/), you can use the `--type` flag followed by `conventional`. This will prompt `aicommits` to format the commit message according to the Conventional Commits specification with emojis:
-
-```sh
-aicommits --type conventional # or -t conventional
-```
-
 This feature can be useful if your project follows the Conventional Commits standard or if you're using tools that rely on this commit format.
 
 **Example outputs:**
 
-- `✨ feat: add user authentication system`
-- `🐛 fix(auth): resolve login validation issue`
-- `📚 docs: update API documentation`
-- `♻️ refactor: improve code structure`
-- `🧪 test: add unit tests for auth module`
+- `feat: add user authentication system`
+- `fix: resolve login validation issue`
+- `docs: update API documentation`
+- `refactor: improve code structure`
+- `test: add unit tests for auth module`
 
 ### Git hook
 
@@ -127,43 +103,6 @@ In the Git repository you want to uninstall the hook from:
 
 ```sh
 aicommits hook uninstall
-```
-
-#### Usage
-
-1. Stage your files and commit:
-
-   ```sh
-   git add <files...>
-   git commit # Only generates a message when it's not passed in
-   ```
-
-   > If you ever want to write your own message instead of generating one, you can simply pass one in: `git commit -m "My message"`
-
-2. Aicommits will generate the commit message for you and pass it back to Git. Git will open it with the [configured editor](https://docs.github.com/en/get-started/getting-started-with-git/associating-text-editors-with-git) for you to review/edit it.
-
-3. Save and close the editor to commit!
-
-## Configuration
-
-### Reading a configuration value
-
-To retrieve a configuration option, use the command:
-
-```sh
-aicommits config get <key>
-```
-
-For example, to retrieve the API key, you can use:
-
-```sh
-aicommits config get OPENAI_API_KEY
-```
-
-You can also retrieve multiple configuration options at once by separating them with spaces:
-
-```sh
-aicommits config get OPENAI_API_KEY generate
 ```
 
 ### Setting a configuration value
@@ -285,22 +224,6 @@ Default: `150`
 
 ```sh
 aicommits config set max-length=100
-```
-
-#### type
-
-Default: `""` (Empty string)
-
-The type of commit message to generate. Set this to "conventional" to generate commit messages that follow the Conventional Commits specification:
-
-```sh
-aicommits config set type=conventional
-```
-
-You can clear this option by setting it to an empty string:
-
-```sh
-aicommits config set type=
 ```
 
 ## How it works
