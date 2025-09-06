@@ -39,13 +39,6 @@ const configParsers = {
 		if (!key) {
 			return undefined;
 		}
-		parseAssert(
-			'OPENAI_API_KEY',
-			key.startsWith('sk-'),
-			'Must start with "sk-"'
-		);
-		// Key can range from 43~51 characters. There's no spec to assert this.
-
 		return key;
 	},
 	OPENAI_MODEL(model?: string) {
@@ -59,19 +52,12 @@ const configParsers = {
 		if (!key) {
 			return undefined;
 		}
-		parseAssert(
-			'CLAUDE_API_KEY',
-			key.startsWith('sk-ant-'),
-			'Must start with "sk-ant-"'
-		);
-
 		return key;
 	},
 	CLAUDE_API_MODEL(model?: string) {
 		if (!model || model.length === 0) {
 			return 'claude-sonnet-4-0';
 		}
-
 		return model;
 	},
 	locale(locale?: string) {
